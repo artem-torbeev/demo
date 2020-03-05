@@ -18,10 +18,15 @@ public class UserHibernateDAO implements CustomerDao<User> {
     private EntityManager entityManager;
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
+    /*EAGER загрузка заставляет ORM загружать связанные сущности и коллекции сразу, вместе с корневой сущностью.
+    LAZY загрузка означает, что ORM загрузит сущность или коллекцию отложено, при первом обращении к ней из кода.
+    При использовании оператора JOIN FETCH.
+    Корневые сущности со связанными коллекциями будут загружены в одном SQL запросе.
+    Результатом запроса будет декартово произведение (cartesian product).
+    Вместо 2 элементов в результирующей выборке, запрос с JOIN FETCH вернет 3*/
     @Override
     public List<User> selectAllUsers() {
-        return entityManager.createQuery("from User u", User.class).getResultList();
+        return entityManager.createQuery("from User u join fetch u.role", User.class).getResultList();
     }
 
     @Override
@@ -44,7 +49,7 @@ public class UserHibernateDAO implements CustomerDao<User> {
 
     @Override
     public User getUserByUsername(String username) {
-        String hql = "from User u where u.username = :username";
+        String hql = "from User u join fetch u.role where u.username = :username";
         TypedQuery<User> query = entityManager.createQuery(hql, User.class);
         query.setParameter("username", username);
         List<User> userList = query.getResultList();

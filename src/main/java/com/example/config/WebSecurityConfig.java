@@ -11,21 +11,23 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import security.CustomAuthenticationSuccessHandler;
 
 
 @EnableWebSecurity
 @Configuration
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final AuthenticationSuccessHandler authSuccessHandler;
-
     private final CustomerUserDetailsService userDetailsService;
 
     @Autowired
-    public WebSecurityConfig(AuthenticationSuccessHandler authSuccessHandler,
-                             CustomerUserDetailsService userDetailsService) {
-        this.authSuccessHandler = authSuccessHandler;
+    public WebSecurityConfig(CustomerUserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler authSuccessHandler(){
+        return new CustomAuthenticationSuccessHandler();
     }
 
     @Bean
@@ -44,14 +46,15 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.csrf()
                 .disable();
         http.authorizeRequests()
-                .antMatchers("/register", "/home", "/login").permitAll()
+                .antMatchers("/register", "/", "/login").permitAll()
                 .antMatchers("/admin/**").hasAuthority("ROLE_ADMIN");
         http.formLogin()
                 .loginPage("/login")
-                // Перенапровление пользователя
-                .successHandler(authSuccessHandler)
+                .loginProcessingUrl("/login")
+                // Перенапровление пользователя взависимости от роли
+                .successHandler(authSuccessHandler())
                 .and()
-                // Прова доступа
+                // страница если нет пров доступа
                 .exceptionHandling().accessDeniedPage("/access_denied");
         http.logout()
                 .logoutUrl("/logout")
@@ -59,6 +62,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutSuccessUrl("/")
                 // делаем не валидной текущую сессию
                 .invalidateHttpSession(true)
-                .deleteCookies ("JSESSIONID");
+                .deleteCookies("JSESSIONID");
     }
 }

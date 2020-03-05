@@ -22,6 +22,7 @@ public class UserService implements CustomerService<User> {
 
 
     @Override
+
     public List<User> selectAllUsers() {
         return userHibernateDAO.selectAllUsers();
     }
@@ -45,11 +46,13 @@ public class UserService implements CustomerService<User> {
     }
 
     @Override
+
     public User getUserById(Long id) {
         return (User) userHibernateDAO.getUserById(id);
     }
 
     @Override
+
     public User getUserByUsername(String username) {
         return (User) userHibernateDAO.getUserByUsername(username);
     }

@@ -34,6 +34,7 @@
             <td><i><c:out value="${user.username}"/></i></td>
             <td><i><c:out value="${user.email}"/></i></td>
             <td>
+<%--                <c:forEach items="${user.role}" var="role">${role.role} </c:forEach>--%>
                 <c:forEach items="${user.role}" var="role">${role.role} </c:forEach>
             </td>
 

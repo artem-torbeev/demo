@@ -22,6 +22,7 @@
 
         <c:if test="${pageContext.request.userPrincipal.name != null}">
             <h3>Welcome : ${pageContext.request.userPrincipal.name}</h3>
+            <p><a href="<c:url value="/logout" />">Logout</a></p>
         </c:if>
 
     </div>
